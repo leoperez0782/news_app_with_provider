@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_provider/src/models/news_models.dart';
+import 'package:news_provider/src/services/read_news_service.dart';
 import 'package:news_provider/src/theme/tema.dart';
 
 class NewsList extends StatelessWidget {
@@ -30,7 +31,7 @@ class _News extends StatelessWidget {
         _TitleCard(this.news),
         _ImageCard(this.news),
         _BodyCard(this.news),
-        _ButtonsCard(),
+        _ButtonsCard(this.news),
         SizedBox(
           height: 10,
         ),
@@ -113,7 +114,8 @@ class _BodyCard extends StatelessWidget {
 }
 
 class _ButtonsCard extends StatelessWidget {
-  const _ButtonsCard();
+  final Article news;
+  const _ButtonsCard(this.news);
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +124,10 @@ class _ButtonsCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           RawMaterialButton(
-            onPressed: () {},
+            //Favorite button
+            onPressed: () {
+              print('funciona');
+            },
             fillColor: myTheme.accentColor,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -132,7 +137,16 @@ class _ButtonsCard extends StatelessWidget {
             width: 10,
           ),
           RawMaterialButton(
-            onPressed: () {},
+            //Read button
+            onPressed: () {
+              final service = ReadNewsService();
+
+              try {
+                service.launchInWebViewOrVC(news.url!);
+              } catch (error) {
+                _showModal(error.toString(), context);
+              }
+            },
             fillColor: Colors.blue[800],
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -140,6 +154,31 @@ class _ButtonsCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showModal(String error, BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          color: Colors.amber,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(error),
+                ElevatedButton(
+                  child: const Text('Close BottomSheet'),
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

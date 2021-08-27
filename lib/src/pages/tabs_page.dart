@@ -33,6 +33,7 @@ class _Navigation extends StatelessWidget {
       currentIndex: navegacionModel.actualPage,
       onTap: (i) {
         navegacionModel.actualPage = i;
+        //para que siempre cargue las categorias.
         newService.selectedCategory = newService.selectedCategory;
       },
       items: [
